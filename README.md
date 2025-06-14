@@ -1,15 +1,11 @@
-# snake.nvim
+# 🐍 snake.nvim
 
-A snake game you can run inside Neovim! Written in C++.
+A minimal Snake game inside Neovim, written in pure Lua. Move the snake with `hjkl`, eat apples 🍎, and avoid crashing.
 
-## Install
-
-Using lazy.nvim:
+## 📦 Installation (Lazy.nvim)
 
 ```lua
 {
-  "yourname/snake.nvim",
-  config = function()
-    vim.api.nvim_set_keymap("n", "<leader>sg", ":Snake<CR>", { noremap = true, silent = true })
-  end,
+  "kashsuks/snake.nvim",
+  lazy = false
 }
