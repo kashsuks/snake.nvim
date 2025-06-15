@@ -8,13 +8,19 @@ local state = {
   height = 10,
   buf = nil,
   timer = nil,
-  gameOver = false
+  gameOver = false,
+  score = 0
 }
 
 local function draw()
   vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {})
+
+  local top = "╔" .. string.rep("═", state.width * 2) .. "╗"
+  vim.api.nvim_buf_set_lines(state.buf, 0, 1, false, {top})
+
   for i = 1, state.height do
     local line = {}
+    table.insert(line, "║")
     for j = 1, state.width do
       local isBody = false
       for _, s in ipairs(state.snake) do
@@ -31,8 +37,12 @@ local function draw()
         table.insert(line, "  ")
       end
     end
-    vim.api.nvim_buf_set_lines(state.buf, i-1, i, false, {table.concat(line)})
+    table.insert(line, "║")
+    vim.api.nvim_buf_set_lines(state.buf, i, i + 1, false, {table.concat(line)})
   end
+
+  local bottom = "╚" .. string.rep("═", state.width * 2) .. "╝  Score: " .. state.score
+  vim.api.nvim_buf_set_lines(state.buf, state.height + 1, state.height + 2, false, {bottom})
 end
 
 local function move()
@@ -44,14 +54,14 @@ local function move()
   if newHead[1] < 1 or newHead[1] > state.height or
      newHead[2] < 1 or newHead[2] > state.width then
     state.gameOver = true
-    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over!"})
+    vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over! Final Score: " .. state.score})
     return
   end
 
   for _, s in ipairs(state.snake) do
     if s[1] == newHead[1] and s[2] == newHead[2] then
       state.gameOver = true
-      vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over!"})
+      vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over! Final Score: " .. state.score})
       return
     end
   end
@@ -60,6 +70,7 @@ local function move()
 
   if newHead[1] == state.food[1] and newHead[2] == state.food[2] then
     state.food = {math.random(1, state.height), math.random(1, state.width)}
+    state.score = state.score + 1
   else
     table.remove(state.snake, 1)
   end
@@ -82,6 +93,11 @@ function M.start()
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_set_current_buf(buf)
   state.buf = buf
+  state.snake = {{5,5}}
+  state.dir = {0, 1}
+  state.food = {math.random(1, state.height), math.random(1, state.width)}
+  state.score = 0
+  state.gameOver = false
 
   setKeys()
   draw()
@@ -93,4 +109,3 @@ end
 vim.api.nvim_create_user_command("Snake", M.start, {})
 
 return M
-
