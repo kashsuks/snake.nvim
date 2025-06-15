@@ -8,7 +8,7 @@ local state = {
   height = 10,
   buf = nil,
   timer = nil,
-  game_over = false
+  gameOver = false
 }
 
 local function draw()
@@ -16,16 +16,16 @@ local function draw()
   for i = 1, state.height do
     local line = {}
     for j = 1, state.width do
-      local is_body = false
+      local isBody = false
       for _, s in ipairs(state.snake) do
         if s[1] == i and s[2] == j then
-          is_body = true
+          isBody = true
           break
         end
       end
       if state.food[1] == i and state.food[2] == j then
         table.insert(line, "🍎")
-      elseif is_body then
+      elseif isBody then
         table.insert(line, "⬛")
       else
         table.insert(line, "  ")
@@ -36,21 +36,21 @@ local function draw()
 end
 
 local function move()
-  if state.game_over then return end
+  if state.gameOver then return end
 
   local head = state.snake[#state.snake]
-  local new_head = {head[1] + state.dir[1], head[2] + state.dir[2]}
+  local newHead = {head[1] + state.dir[1], head[2] + state.dir[2]}
 
-  if new_head[1] < 1 or new_head[1] > state.height or
-     new_head[2] < 1 or new_head[2] > state.width then
-    state.game_over = true
+  if newHead[1] < 1 or newHead[1] > state.height or
+     newHead[2] < 1 or newHead[2] > state.width then
+    state.gameOver = true
     vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over!"})
     return
   end
 
   for _, s in ipairs(state.snake) do
     if s[1] == new_head[1] and s[2] == new_head[2] then
-      state.game_over = true
+      state.gameOver = true
       vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over!"})
       return
     end
@@ -58,7 +58,7 @@ local function move()
 
   table.insert(state.snake, new_head)
 
-  if new_head[1] == state.food[1] and new_head[2] == state.food[2] then
+  if newHead[1] == state.food[1] and newHead[2] == state.food[2] then
     state.food = {math.random(1, state.height), math.random(1, state.width)}
   else
     table.remove(state.snake, 1)
@@ -68,10 +68,10 @@ local function move()
 end
 
 local function set_keys()
-  vim.keymap.set('n', 'h', function() state.dir = {0, -1} end, {buffer = state.buf})
-  vim.keymap.set('n', 'l', function() state.dir = {0, 1} end, {buffer = state.buf})
-  vim.keymap.set('n', 'k', function() state.dir = {-1, 0} end, {buffer = state.buf})
-  vim.keymap.set('n', 'j', function() state.dir = {1, 0} end, {buffer = state.buf})
+  vim.keymap.set('n', 'a', function() state.dir = {0, -1} end, {buffer = state.buf})
+  vim.keymap.set('n', 'd', function() state.dir = {0, 1} end, {buffer = state.buf})
+  vim.keymap.set('n', 'w', function() state.dir = {-1, 0} end, {buffer = state.buf})
+  vim.keymap.set('n', 's', function() state.dir = {1, 0} end, {buffer = state.buf})
   vim.keymap.set('n', 'q', function()
     if state.timer then state.timer:stop() end
     vim.api.nvim_buf_delete(state.buf, {force=true})
