@@ -49,14 +49,14 @@ local function move()
   end
 
   for _, s in ipairs(state.snake) do
-    if s[1] == new_head[1] and s[2] == new_head[2] then
+    if s[1] == newHead[1] and s[2] == newHead[2] then
       state.gameOver = true
       vim.api.nvim_buf_set_lines(state.buf, 0, -1, false, {"Game Over!"})
       return
     end
   end
 
-  table.insert(state.snake, new_head)
+  table.insert(state.snake, newHead)
 
   if newHead[1] == state.food[1] and newHead[2] == state.food[2] then
     state.food = {math.random(1, state.height), math.random(1, state.width)}
@@ -67,7 +67,7 @@ local function move()
   draw()
 end
 
-local function set_keys()
+local function setKeys()
   vim.keymap.set('n', 'a', function() state.dir = {0, -1} end, {buffer = state.buf})
   vim.keymap.set('n', 'd', function() state.dir = {0, 1} end, {buffer = state.buf})
   vim.keymap.set('n', 'w', function() state.dir = {-1, 0} end, {buffer = state.buf})
@@ -83,7 +83,7 @@ function M.start()
   vim.api.nvim_set_current_buf(buf)
   state.buf = buf
 
-  set_keys()
+  setKeys()
   draw()
 
   state.timer = vim.loop.new_timer()
